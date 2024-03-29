@@ -1,0 +1,35 @@
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.cloudfront.AmazonCloudFront;
+import com.amazonaws.services.cloudfront.AmazonCloudFrontClientBuilder;
+import com.amazonaws.services.cloudfront.model.CreateInvalidationRequest;
+import com.amazonaws.services.cloudfront.model.Paths;
+import com.amazonaws.services.acm.ACMClient;
+import com.amazonaws.services.acm.ACMClientBuilder;
+import com.amazonaws.services.acm.model.RequestCertificateRequest;
+
+public class WebAppDeployment {
+
+    public static void main(String[] args) {
+        // Upload index.html to S3
+        uploadToS3Bucket("index.html", "path/to/index.html", "your-s3-bucket-name");
+        
+        // Invalidate CloudFront cache
+        invalidateCloudFrontCache("your-cloudfront-distribution-id");
+    }
+
+    private static void uploadToS3Bucket(String objectKey, String filePath, String bucketName) {
+        AmazonS3 s3Client = AmazonS3ClientBuilder.standard().build();
+        PutObjectRequest request = new PutObjectRequest(bucketName, objectKey, new File(filePath));
+        s3Client.putObject(request);
+    }
+
+    private static void invalidateCloudFrontCache(String distributionId) {
+        AmazonCloudFront cloudFrontClient = AmazonCloudFrontClientBuilder.standard().build();
+        CreateInvalidationRequest request = new CreateInvalidationRequest()
+            .withDistributionId(distributionId)
+            .withInvalidationBatch(new InvalidationBatch().withPaths(new Paths().withItems("/*").withQuantity(1)))
+        cloudFrontClient.createInvalidation(request);
+    }
+}
