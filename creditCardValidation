@@ -1,0 +1,44 @@
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class CreditCardNumberValidator {
+    
+    public static boolean isCreditCardNumberValidator(String cardNumber) {
+        
+        String pattern = "^[456]\\d{3}(-?\\d{4}){3}$";
+        
+        Pattern r = Pattern.compile(pattern);
+        
+        Matcher m = r.matcher(cardNumber);
+
+        if (m.find()) {
+            String cardNumberNoHyphens = cardNumber.replaceAll("-", "")
+            if (!cardNumberNoHyphens.matches(".*(\\d)\\1{3,}.*")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static void main(String[] args) {
+        // Test cases
+        String[] testCases = {
+            "5123-4567-8912-3456",
+            "61234-567-8912-3456",
+            "6123456789123456",
+            "4123356789123456",
+            "5123-4567-8912-3456",
+            "61234-567-8912-3456",
+            "4123356789123456",
+            "5133-3367-8912-3456",
+            "5123 - 3567 - 8912 - 3456",
+            "512345-6789123456",
+            "5123--4567-8912-3456",
+            "512345678912345"
+        };
+
+        for (String cardNumber : testCases) {
+            System.out.println(cardNumber + ": " + isValidCreditCardNumber(cardNumber));
+        }
+    }
+}
